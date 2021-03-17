@@ -26,37 +26,54 @@ class DocumentController extends Controller
     
     public function create()
     {
-    //     // $groups = \App\Models\AccountGroup::all()->map->only('id','name');
-    //     // $group_first = \App\Models\AccountGroup::all('id','name')->first();
 
-         $documents = \App\Models\DocumentType::all()->map->only('id','name');
-        $doc_first = \App\Models\DocumentType::all('id','name')->first();
+        $groups = \App\Models\AccountGroup::all()->map->only('id','name');
+        $group_first = \App\Models\AccountGroup::all('id','name')->first();
 
-    //     $years = \App\Models\Year::all()->map->only('id','begin' ,'end');
-    //     $year_first = \App\Models\Year::all('id','begin' ,'end')->first();
-
-    //     $companies = \App\Models\Company::all()->map->only('id','name');
-    //     $comp_first = \App\Models\Company::all('id','name')->first();
+        $companies = \App\Models\Company::all()->map->only('id','name');
+        $comp_first = \App\Models\Company::all('id','name')->first();
         
-  
         return Inertia::render('Documents/Create',[
-            'documents' => $documents, 'doc_first' => $doc_first
-
-            
-    //         , 'years' => $years, 'year_first' => $year_first
-    //         , 'companies'=> $companies , 'comp_first'=> $comp_first
-    ]);
-            
-            
+                 'accounts' => DocumentType::all()
+                        ->map(function ($docs){
+                            return [
+                            'id' => $docs->id,
+                            'name' => $docs->name,
+                            'prefix' => $docs->prefix,
+                            'ref' => $docs->name." - ".$docs->prefix,
+                            // 'date' => $docs->date,
+                            // 'description'=> $docs->description,
+                    ];
+                }),
+                'groups' => $groups, 'group_first' => $group_first     ,
+                'companies'=> $companies , 'comp_first'=> $comp_first 
+         
+                
+        ]);
         }
         
-        public function store()
+
+        public function store(Req $request)
         {
-    //         'ref', 'date','description','type_id','paid','posted','approved','enabled', 'company_id', 'year_id'
-             
-        Request::validate([
-            'doc_type' => ['required'],
-            'date'  => ['required'],
+    // dd($request);
+            Request::validate([
+                'company_id' => ['required'],
+                'ref' => ['required'],
+                'date' => ['required'],
+                'discription' => ['required'],
+                'balances.*.type_id' => ['required'],
+                // 'balances.*.year_id' => ['required'],
+            ]);
+    
+        }
+
+        // public function store()
+        // {
+    // //         'ref', 'date','description','type_id','paid','posted','approved','enabled', 'company_id', 'year_id'
+                
+        // Request::validate([
+        //     'doc_type' => ['required'],
+        //     'date'  => ['required'],
     //         'description'  => ['required'],
     //         'type_id'  => ['required'],
     //         'paid' => ['required'],
@@ -67,22 +84,22 @@ class DocumentController extends Controller
             // 'paid' => ['nullable']
             // 'posted' => ['required']
             // 'approved' => ['required']
-        ]);
+        // ]);
 
-            Document::create([
-            'document_id' => Request::input('doc_type'),
-                'date' => Request::input('date'),
+            // Document::create([
+            // 'document_id' => Request::input('doc_type'),
+            //     'date' => Request::input('date'),
     //             'description' => Request::input('date'),
                 
     //             'paid' => Request::input('name'),
     //             'company_id' => Request::input('company'),
     //             'year_id' => Request::input('year'),
 
-        ]);
+    //     ]);
 
-        return Redirect::route('documents')->with('success', 'Transaction created.');
+    //     return Redirect::route('documents')->with('success', 'Transaction created.');
 
-    }
+    // }
 
 
     // public function show(Account $account)

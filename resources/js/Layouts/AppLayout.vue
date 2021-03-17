@@ -9,7 +9,7 @@
           <div class="flex justify-between h-16">
             <div class="flex">
               <!-- Logo -->
-              <div class="flex-shrink-0 flex items-center">
+              <div class="pt-2 pb-3 space-y-1">
                 <inertia-link :href="route('dashboard')">
                   <jet-application-mark class="block h-9 w-auto" />
                 </inertia-link>
@@ -23,6 +23,7 @@
                 >
                   Dashboard
                 </jet-nav-link>
+
                 <jet-nav-link
                   :href="route('accountgroups')"
                   :active="route().current('accountgroups')"
@@ -35,6 +36,13 @@
                   :active="route().current('companies')"
                 >
                   Companies
+                </jet-nav-link>
+
+                <jet-nav-link
+                  :href="route('years')"
+                  :active="route().current('years')"
+                >
+                  Years
                 </jet-nav-link>
 
                 <jet-nav-link

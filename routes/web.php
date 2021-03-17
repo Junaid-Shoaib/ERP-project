@@ -8,6 +8,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\YearController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,9 @@ use App\Http\Controllers\DocumentController;
 |
 */
 
+
+
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -28,6 +32,38 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+// Years
+
+Route::get('years', [YearController::class, 'index'])
+    ->name('years')
+    ->middleware('auth');
+
+Route::get('years/create', [YearController::class, 'create'])
+    ->name('years.create')
+    ->middleware('auth');
+
+Route::get('years/{year}', [YearController::class, 'show'])
+    ->name('years.show')
+    ->middleware('auth');
+
+Route::post('years', [YearController::class, 'store'])
+    ->name('years.store')
+    ->middleware('auth');
+
+Route::get('years/{year}/edit', [YearController::class, 'edit'])
+    ->name('years.edit')
+    ->middleware('auth');
+
+Route::put('years/{year}', [YearController::class, 'update'])
+    ->name('years.update')
+    ->middleware('auth');
+
+Route::delete('years/{year}', [YearController::class, 'destroy'])
+    ->name('years.destroy')
+    ->middleware('auth');
+
+//Documents
 
 Route::get('documents', [DocumentController::class, 'index'])
 ->name('documents')
