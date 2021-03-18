@@ -17,24 +17,32 @@
           <tr class="bg-indigo-100">
             <!-- 'ref', 'date','description','type_id','paid','posted','approved','enabled', 'company_id', 'year_id -->
             <!-- <th class="py-2 px-4 border">Voucher Id</th> -->
-            <th class="py-2 px-4 border">ref</th>
-            <th class="py-2 px-4 border w-2/5">date</th>
-            <th class="py-2 px-4 border w-2/5">description</th>
-            <!-- <th class="py-2 px-4 border">type_id</th>
+            <th class="py-2 px-4 border">Reference</th>
+            <th class="py-2 px-4 border">date</th>
+            <th class="py-2 px-4 border">description</th>
+            <!-- <th class="py-2 px-4 border">type_id</th> -->
+            <th class="py-2 px-4 border">group_id</th>
             <th class="py-2 px-4 border">paid</th>
             <th class="py-2 px-4 border">posted</th>
             <th class="py-2 px-4 border">approved</th>
             <th class="py-2 px-4 border">company_id</th>
-            <th class="py-2 px-4 border">year_id</th> -->
+            <th class="py-2 px-4 border">year_id</th>
+
             <th class="py-2 px-4 border">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="item in data" :key="item.id">
             <!-- <td class="py-1 px-4 border">{{ item.id }}</td> -->
-            <td class="py-1 px-4 border">{{ item.type_id }}</td>
+            <td class="py-1 px-4 border">{{ item.ref }}</td>
             <td class="py-1 px-4 border">{{ item.date }}</td>
             <td class="py-1 px-4 border">{{ item.description }}</td>
+            <td class="py-1 px-4 border">{{ item.type_id }}</td>
+            <td class="py-1 px-4 border">{{ item.paid }}</td>
+            <td class="py-1 px-4 border">{{ item.posted }}</td>
+            <td class="py-1 px-4 border">{{ item.approved }}</td>
+            <td class="py-1 px-4 border">{{ item.company_id }}</td>
+            <td class="py-1 px-4 border">{{ item.year_id }}</td>
 
             <td class="py-1 px-4 border">
               <button

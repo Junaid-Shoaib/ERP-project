@@ -5,6 +5,7 @@
         Transaction
       </h2>
     </template>
+
     <div class="">
       <form @submit.prevent="submit">
         <div class="p-2 mr-2 mb-2 ml-6 flex flex-wrap">
@@ -13,9 +14,15 @@
             <option
               v-for="account in accounts"
               :key="account.id"
-              :value="account.id"
+              :value="account.ref"
             >
               {{ account.ref }}
+            </option>
+          </select>
+
+          <select v-model="form.type_id" class="rounded-md w-65">
+            <option v-for="type in types" :key="type.id" :value="type.id">
+              {{ type.name }}
             </option>
           </select>
         </div>
@@ -27,8 +34,9 @@
             class="pr-2 pb-2 w-44 rounded-md leading-tight"
             label="received"
           />
-          <div v-if="errors.date">{{ errors.date }}</div>
+          <!-- <div v-if="errors.date">{{ errors.date }}</div> -->
         </div>
+
         <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
           <label class="w-28 inline-block text-right mr-4">Description:</label>
           <input
@@ -37,18 +45,27 @@
             class="pr-2 pb-2 w-full lg:w-1/4 rounded-md leading-tight"
             label="description"
           />
-          <div v-if="errors.description">{{ errors.description }}</div>
+          <!-- <div v-if="errors.description">{{ errors.description }}</div> -->
         </div>
 
         <div class="p-2 mr-2 mb-2 ml-6 flex flex-wrap">
           <label class="w-28 inline-block text-right mr-4">Company:</label>
           <select v-model="form.company_id" class="rounded-md w-65">
             <option
-              v-for="account in companies"
-              :key="account.id"
-              :value="account.id"
+              v-for="company in companies"
+              :key="company.id"
+              :value="company.id"
             >
-              {{ account.name }}
+              {{ company.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="p-2 mr-2 mb-2 ml-6 flex flex-wrap">
+          <label class="w-28 inline-block text-right mr-4">Year:</label>
+          <select v-model="form.year_id" class="rounded-md w-65">
+            <option v-for="year in years" :key="year.id" :value="year.id">
+              {{ year.id }}
             </option>
           </select>
         </div>
@@ -76,13 +93,13 @@
             <tbody>
               <tr v-for="(balance, index) in form.balances" :key="balance.id">
                 <td>
-                  <select v-model="balance.type_id" class="rounded-md w-36">
+                  <select v-model="balance.group_id" class="rounded-md w-36">
                     <option
-                      v-for="account in groups"
-                      :key="account.id"
-                      :value="account.id"
+                      v-for="group in groups"
+                      :key="group.id"
+                      :value="group.id"
                     >
-                      {{ account.name }}
+                      {{ group.name }}
                     </option>
                   </select>
                 </td>
@@ -170,8 +187,10 @@ export default {
     comp_first: Object,
     groups: Object,
     group_first: Object,
-    // documents: Object,
-    // doc_first: Object,
+    years: Object,
+    year_first: Object,
+    types: Object,
+    type_first: Object,
   },
 
   data() {
@@ -181,9 +200,12 @@ export default {
         discription: "",
         ref: this.accounts[0].id,
         company_id: this.comp_first.id,
+        year_id: this.years.year_id,
+        type_id: this.type_first.id,
+
         balances: [
           {
-            type_id: this.group_first.id,
+            group_id: this.group_first.id,
             debit: "",
             credit: "",
           },
@@ -204,11 +226,12 @@ export default {
 
   methods: {
     submit() {
-      this.$inertia.post(route("doucments.store"), this.form);
+      this.form.date = format(this.form.date, "yyyy-MM-dd");
+      this.$inertia.post(route("documents.store"), this.form);
     },
     addRow() {
       this.form.balances.push({
-        type_id: this.group_first.name,
+        group_id: this.group_first.name,
         debit: "",
         credit: "",
         // company_id: "",

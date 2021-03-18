@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request as Req;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use App\Models\Document;
@@ -30,9 +31,15 @@ class DocumentController extends Controller
         $groups = \App\Models\AccountGroup::all()->map->only('id','name');
         $group_first = \App\Models\AccountGroup::all('id','name')->first();
 
+        $types = \App\Models\DocumentType::all()->map->only('id','name');
+        $type_first = \App\Models\DocumentType::all('id','name')->first();
+
         $companies = \App\Models\Company::all()->map->only('id','name');
         $comp_first = \App\Models\Company::all('id','name')->first();
         
+        $years = \App\Models\Year::all()->map->only('id','name');
+        // $year_first = \App\Models\Year::all('id','name')->first();
+
         return Inertia::render('Documents/Create',[
                  'accounts' => DocumentType::all()
                         ->map(function ($docs){
@@ -46,7 +53,10 @@ class DocumentController extends Controller
                     ];
                 }),
                 'groups' => $groups, 'group_first' => $group_first     ,
-                'companies'=> $companies , 'comp_first'=> $comp_first 
+                'companies'=> $companies , 'comp_first'=> $comp_first  ,
+                'years'=> $years , 
+                'types'=> $types , 'type_first'=> $type_first  ,
+                
          
                 
         ]);
@@ -59,11 +69,37 @@ class DocumentController extends Controller
             Request::validate([
                 'company_id' => ['required'],
                 'ref' => ['required'],
-                'date' => ['required'],
-                'discription' => ['required'],
-                'balances.*.type_id' => ['required'],
+                'date' => ['required' ,'date'],
+                'description' => ['required'],
+                'year_id' => ['required'],
+                'balances.*.group_id' => ['required'],
+            
                 // 'balances.*.year_id' => ['required'],
             ]);
+    // 'ref', 'date','description','type_id','paid','posted','approved','enabled', 'company_id', 'year_id'
+    
+    foreach($request->balances as $balance){
+    Document::create([
+        'ref' => Request::input('ref'),
+        'date' => Request::input('date'),
+        'description' => Request::input('description'),
+        'company_id' => Request::input('company_id'),
+        'year_id' => Request::input('year_id'),
+         'type_id' => $balance['group_id'],  
+         'type_id' =>Request::input('type_id'),  
+
+        
+        // 'company_id' => $balance['company_id'],
+        // 'paid' => $balance['paid'],
+        // 'posted' => $balance['posted'],
+        // 'approved' => $balance['approved'],
+        
+        
+        ]);
+            }
+    
+            return Redirect::route('documents')->with('success', 'Bank Balance created.');
+    
     
         }
 

@@ -75,13 +75,18 @@ Route::get('documents/create', [DocumentController::class, 'create'])
     ->name('documents.create')
     ->middleware('auth');
 
-//     Route::get('doctypes/{doctype}', [DocumentController::class, 'show'])
-//     ->name('doctypes.show')
-//     ->middleware('auth');
+    
+    Route::post('documents', [DocumentController::class, 'store'])
+    ->name('documents.store')
+    ->middleware('auth');
 
-// Route::post('doctypes', [DocumentController::class, 'store'])
-//     ->name('doctypes.store')
-//     ->middleware('auth');
+    // Route::post('documents', [DocumentController::class, 'store'])
+    // ->name('documents.store')
+    // ->middleware('auth');
+    
+    //     Route::get('doctypes/{doctype}', [DocumentController::class, 'show'])
+    //     ->name('doctypes.show')
+    //     ->middleware('auth');
 
 //     Route::get('doctypes/{doctype}/edit', [DocumentController::class, 'edit'])
 //     ->name('doctypes.edit')
