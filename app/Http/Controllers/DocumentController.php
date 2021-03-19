@@ -28,8 +28,8 @@ class DocumentController extends Controller
     public function create()
     {
 
-        $groups = \App\Models\AccountGroup::all()->map->only('id','name');
-        $group_first = \App\Models\AccountGroup::all('id','name')->first();
+        $groups = \App\Models\Account::all()->map->only('id','name');
+        $group_first = \App\Models\Account::all('id','name')->first();
 
         $types = \App\Models\DocumentType::all()->map->only('id','name');
         $type_first = \App\Models\DocumentType::all('id','name')->first();
@@ -70,7 +70,7 @@ class DocumentController extends Controller
                 'company_id' => ['required'],
                 'ref' => ['required'],
                 'date' => ['required' ,'date'],
-                'description' => ['required'],
+                'description' => ['required'],<div class=""></div>
                 'year_id' => ['required'],
                 'balances.*.group_id' => ['required'],
             
@@ -78,24 +78,35 @@ class DocumentController extends Controller
             ]);
     // 'ref', 'date','description','type_id','paid','posted','approved','enabled', 'company_id', 'year_id'
     
-    foreach($request->balances as $balance){
-    Document::create([
+    $doc = Document::create([
         'ref' => Request::input('ref'),
         'date' => Request::input('date'),
         'description' => Request::input('description'),
         'company_id' => Request::input('company_id'),
-        'year_id' => Request::input('year_id'),
-         'type_id' => $balance['group_id'],  
-         'type_id' =>Request::input('type_id'),  
-
+        'type_id' =>Request::input('type_id'), 
+        'year_id' =>Request::input('year_id'),
         
+        ]);
+        
+        
+        
+        foreach($request->balances as $balance){
+            Entry::create([
+
+                'account_id' => $balance['group_id'], 
+                'debit' => $balance['debit'] ,
+                'credit' => $balance['credit'],
+                'company_id' => $doc->company_id,
+                'year_id' => $doc->year_id,
+                'document_id' => $doc->id,
+                // 'year_id' => $balance   ('year_id'),
+                
         // 'company_id' => $balance['company_id'],
         // 'paid' => $balance['paid'],
         // 'posted' => $balance['posted'],
         // 'approved' => $balance['approved'],
-        
-        
         ]);
+        
             }
     
             return Redirect::route('documents')->with('success', 'Bank Balance created.');

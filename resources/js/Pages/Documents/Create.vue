@@ -10,7 +10,7 @@
       <form @submit.prevent="submit">
         <div class="p-2 mr-2 mb-2 ml-6 flex flex-wrap">
           <label class="w-28 inline-block text-right mr-4">Reference:</label>
-          <select v-model="form.ref" class="rounded-md w-65">
+          <select v-model="form.ref" class="rounded-md w-1/4">
             <option
               v-for="account in accounts"
               :key="account.id"
@@ -20,7 +20,7 @@
             </option>
           </select>
 
-          <select v-model="form.type_id" class="rounded-md w-65">
+          <select v-model="form.type_id" class="rounded-md w-3/4">
             <option v-for="type in types" :key="type.id" :value="type.id">
               {{ type.name }}
             </option>
@@ -105,6 +105,7 @@
                 </td>
 
                 <td>
+                  <!-- :disabled="!!balance.credit" -->
                   <input
                     v-model="balance.debit"
                     type="text"
@@ -112,6 +113,7 @@
                   />
                 </td>
                 <td>
+                  <!-- :disabled="!!balance.debit" -->
                   <input
                     v-model="balance.credit"
                     type="text"
@@ -182,13 +184,18 @@ export default {
 
   props: {
     errors: Object,
+
     accounts: Object,
+
     companies: Object,
     comp_first: Object,
+
     groups: Object,
     group_first: Object,
+
     years: Object,
     year_first: Object,
+
     types: Object,
     type_first: Object,
   },
@@ -208,6 +215,8 @@ export default {
             group_id: this.group_first.id,
             debit: "",
             credit: "",
+            // company_id: 4,
+            // year_id: 1,
           },
         ],
       }),
@@ -234,7 +243,7 @@ export default {
         group_id: this.group_first.name,
         debit: "",
         credit: "",
-        // company_id: "",
+        // company_id: 4,
         // account_id: this.accounts[0].id,
         // year_id: "",
       });
