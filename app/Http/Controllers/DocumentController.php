@@ -10,8 +10,7 @@ use App\Models\DocumentType;
 use App\Models\Account;
 use App\Models\Entry;
 use App\Models\Year;
-// use App\Models\Document;
-// use App\Models\Year;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DocumentController extends Controller
@@ -48,8 +47,6 @@ class DocumentController extends Controller
                             'name' => $docs->name,
                             'prefix' => $docs->prefix,
                             'ref' => $docs->name." - ".$docs->prefix,
-                            // 'date' => $docs->date,
-                            // 'description'=> $docs->description,
                     ];
                 }),
                 'groups' => $groups, 'group_first' => $group_first     ,
@@ -62,93 +59,57 @@ class DocumentController extends Controller
         ]);
         }
         
-
+        
+        
         public function store(Req $request)
         {
-    // dd($request);
+            // dd($request);
             Request::validate([
                 'company_id' => ['required'],
-                'ref' => ['required'],
-                'date' => ['required' ,'date'],
-                'description' => ['required'],<div class=""></div>
+                // 'ref' => ['required'],
+                'date' => ['required'],
+                'description' => ['required'],
                 'year_id' => ['required'],
                 'balances.*.group_id' => ['required'],
-            
-                // 'balances.*.year_id' => ['required'],
-            ]);
-    // 'ref', 'date','description','type_id','paid','posted','approved','enabled', 'company_id', 'year_id'
-    
-    $doc = Document::create([
-        'ref' => Request::input('ref'),
-        'date' => Request::input('date'),
-        'description' => Request::input('description'),
-        'company_id' => Request::input('company_id'),
-        'type_id' =>Request::input('type_id'), 
-        'year_id' =>Request::input('year_id'),
-        
-        ]);
-        
-        
-        
-        foreach($request->balances as $balance){
-            Entry::create([
-
-                'account_id' => $balance['group_id'], 
-                'debit' => $balance['debit'] ,
-                'credit' => $balance['credit'],
-                'company_id' => $doc->company_id,
-                'year_id' => $doc->year_id,
-                'document_id' => $doc->id,
-                // 'year_id' => $balance   ('year_id'),
+                'balances.*.debit' => ['required'],
+                'balances.*.credit' => ['required'],
                 
-        // 'company_id' => $balance['company_id'],
-        // 'paid' => $balance['paid'],
-        // 'posted' => $balance['posted'],
-        // 'approved' => $balance['approved'],
-        ]);
-        
-            }
-    
-            return Redirect::route('documents')->with('success', 'Bank Balance created.');
+                ]);
+                
+                DB::transaction(function() use($request) {
+                    
+                    $doc = Document::create([
+                        'ref' => Request::input('ref'),
+                        'date' => Request::input('date'),
+                        'description' => Request::input('description'),
+                        'company_id' => Request::input('company_id'),
+                        'type_id' =>Request::input('type_id'), 
+                        'year_id' =>Request::input('year_id'),
+                        
+                        ]);
+                        
+                        
+                        
+                        foreach($request->balances as $balance){
+                            Entry::create([
+                                
+                                'account_id' => $balance['group_id'], 
+                                'debit' => $balance['debit'] ,
+                                'credit' => $balance['credit'],
+                                'company_id' => $doc->company_id,
+                                'year_id' => $doc->year_id,
+                                'document_id' => $doc->id,
+                                ]);
+                                
+                            }
+                        });
+                            
+            return Redirect::route('documents')->with('success', 'Transaction created.');
     
     
         }
 
-        // public function store()
-        // {
-    // //         'ref', 'date','description','type_id','paid','posted','approved','enabled', 'company_id', 'year_id'
-                
-        // Request::validate([
-        //     'doc_type' => ['required'],
-        //     'date'  => ['required'],
-    //         'description'  => ['required'],
-    //         'type_id'  => ['required'],
-    //         'paid' => ['required'],
-    //         'posted'  => ['required'],
-    //         'approved'  => ['required'],
-    //          'company' => ['required'],
-    //          , 'year' => ['required'],
-            // 'paid' => ['nullable']
-            // 'posted' => ['required']
-            // 'approved' => ['required']
-        // ]);
-
-            // Document::create([
-            // 'document_id' => Request::input('doc_type'),
-            //     'date' => Request::input('date'),
-    //             'description' => Request::input('date'),
-                
-    //             'paid' => Request::input('name'),
-    //             'company_id' => Request::input('company'),
-    //             'year_id' => Request::input('year'),
-
-    //     ]);
-
-    //     return Redirect::route('documents')->with('success', 'Transaction created.');
-
-    // }
-
-
+     
     // public function show(Account $account)
     // {
         

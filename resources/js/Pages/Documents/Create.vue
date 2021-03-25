@@ -8,19 +8,12 @@
 
     <div class="">
       <form @submit.prevent="submit">
+        <!-- <div class="p-2 mr-2 mb-2 ml-6 flex flex-wrap">
+          <label class="w-28 inline-block text-right mr-4">Reference:</label>
+         </div> -->
         <div class="p-2 mr-2 mb-2 ml-6 flex flex-wrap">
           <label class="w-28 inline-block text-right mr-4">Reference:</label>
-          <select v-model="form.ref" class="rounded-md w-1/4">
-            <option
-              v-for="account in accounts"
-              :key="account.id"
-              :value="account.ref"
-            >
-              {{ account.ref }}
-            </option>
-          </select>
-
-          <select v-model="form.type_id" class="rounded-md w-3/4">
+          <select v-model="form.type_id" class="rounded-md lg:w-1/4">
             <option v-for="type in types" :key="type.id" :value="type.id">
               {{ type.name }}
             </option>
@@ -28,10 +21,24 @@
         </div>
 
         <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
+          <label class="w-28 inline-block text-right mr-4"></label>
+          <!-- id="type" -->
+          <input
+            type="text"
+            v-model="form.ref"
+            class="rounded-md lg:w-1/4"
+            label="description"
+          />
+          <!-- <div v-if="errors.description">{{ errors.description }}</div> -->
+        </div>
+
+        <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
           <label class="w-28 inline-block text-right mr-4">Date:</label>
+          <!-- class="pr-2 pb-2 w-44 rounded-md leading-tight lg:w-4/4" -->
+
           <datepicker
             v-model="form.date"
-            class="pr-2 pb-2 w-44 rounded-md leading-tight"
+            class="lg:w-4/4 rounded-md"
             label="received"
           />
           <!-- <div v-if="errors.date">{{ errors.date }}</div> -->
@@ -42,7 +49,7 @@
           <input
             type="text"
             v-model="form.description"
-            class="pr-2 pb-2 w-full lg:w-1/4 rounded-md leading-tight"
+            class="rounded-md lg:w-1/4"
             label="description"
           />
           <!-- <div v-if="errors.description">{{ errors.description }}</div> -->
@@ -50,7 +57,10 @@
 
         <div class="p-2 mr-2 mb-2 ml-6 flex flex-wrap">
           <label class="w-28 inline-block text-right mr-4">Company:</label>
-          <select v-model="form.company_id" class="rounded-md w-65">
+          <select
+            v-model="form.company_id"
+            class="rounded-md leading-tight lg:w-1/4"
+          >
             <option
               v-for="company in companies"
               :key="company.id"
@@ -63,7 +73,7 @@
 
         <div class="p-2 mr-2 mb-2 ml-6 flex flex-wrap">
           <label class="w-28 inline-block text-right mr-4">Year:</label>
-          <select v-model="form.year_id" class="rounded-md w-65">
+          <select v-model="form.year_id" class="rounded-md lg:w-1/4">
             <option v-for="year in years" :key="year.id" :value="year.id">
               {{ year.id }}
             </option>
@@ -103,19 +113,24 @@
                     </option>
                   </select>
                 </td>
-
+                <!-- :disabled="!!balance.credit" -->
                 <td>
-                  <!-- :disabled="!!balance.credit" -->
+                  <!-- v-if="balance.credit != null" -->
+                  <!-- v-if="balance.credit != null || balance.debit == 0" -->
                   <input
                     v-model="balance.debit"
                     type="text"
+                    @change="debitchange(index), total()"
                     class="rounded-md w-36"
                   />
                 </td>
                 <td>
                   <!-- :disabled="!!balance.debit" -->
+                  <!-- v-if="balance.debit != null" -->
+                  <!-- v-if="balance.debit != null || balance.credit == 0" -->
                   <input
                     v-model="balance.credit"
+                    @change="creditchange(index)"
                     type="text"
                     class="rounded-md w-36"
                   />
@@ -128,8 +143,42 @@
                 </button>
               </tr>
             </tbody>
+            <thead class="">
+              <tr>
+                <th>Diffrence</th>
+                <th>Debit</th>
+                <th>Credit</th>
+                <!-- <th>Company</th>
+                <th>Account</th>
+                <th>Year</th> -->
+                <!-- <th>Action</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <input
+                    v-model="diffrence"
+                    type="text"
+                    class="rounded-md w-36"
+                  />
+                </td>
+                <td>
+                  <input v-model="dtotal" type="text" class="rounded-md w-36" />
+                </td>
+                <td>
+                  <input
+                    v-model="ctotal"
+                    type="text"
+                    @change="total"
+                    class="rounded-md w-36"
+                  />
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
+
         <div
           class="px-4 py-2 bg-gray-100 border-t border-gray-200 flex justify-start items-center"
         >
@@ -174,7 +223,8 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout";
 import Datepicker from "vue3-datepicker";
-import format from "date-fns/format";
+// import format from "date-fns/format";
+// import { reactive } from "vue";
 
 export default {
   components: {
@@ -202,9 +252,12 @@ export default {
 
   data() {
     return {
+      dtotal: null,
+      ctotal: null,
+
       form: this.$inertia.form({
-        date: "",
-        discription: "",
+        date: null,
+        discription: null,
         ref: this.accounts[0].id,
         company_id: this.comp_first.id,
         year_id: this.years.year_id,
@@ -213,18 +266,25 @@ export default {
         balances: [
           {
             group_id: this.group_first.id,
-            debit: "",
-            credit: "",
+            debit: null,
+            credit: null,
+
             // company_id: 4,
             // year_id: 1,
           },
         ],
+        // dtotal=0,
+        // ctotal=0,
       }),
       isError: false,
       firstError: "",
     };
   },
   watch: {
+    // type: function (val) {
+    //   this.form.type_id = val;
+    //   this.val = form.ref;
+    // },
     errors: function () {
       if (this.errors) {
         this.firstError = this.errors[Object.keys(this.errors)[0]];
@@ -235,12 +295,55 @@ export default {
 
   methods: {
     submit() {
-      this.form.date = format(this.form.date, "yyyy-MM-dd");
+      // this.form.date = format(this.form.date, "yyyy-MM-dd");
       this.$inertia.post(route("documents.store"), this.form);
     },
+
+    total() {
+      let dtotal = 0;
+
+      for (var i = 0; i < this.form.balances.length; i++) {
+        // if (this.form.balances[i].debit) {
+        dtotal = dtotal + parseInt(this.form.balances[i].debit);
+        // }
+        console.log(dtotal + " ");
+
+        // if (this.form.balances[i].credit) {
+        //   ctotal = ctotal + this.form.balances.balances[i].credit;
+        // }
+      }
+
+      this.dtotal = dtotal;
+      this.ctotal = ctotal;
+    },
+
+    //   for (var i = 0; i <= count(this.form.balances); i++) {
+    //     if (this.form.balances[i + 1].debit) {
+    //       dtotal = dtotal + this.form.balances.balances[i].debit;
+    //     }
+    //     if (this.form.balances[i].credit) {
+    //       ctotal = ctotal + this.form.balances.balances[i].credit;
+    //     }
+    //   }
+    //   this.form.dtotal = dtotal;
+    //   this.form.ctotal = ctotal;
+    // },
+
+    debitchange(index) {
+      let a = this.form.balances[index];
+      a.credit = 0;
+      console.log(a.debit);
+    },
+
+    creditchange(index) {
+      let b = this.form.balances[index];
+      b.debit = 0;
+      console.log(b.credit);
+    },
+
     addRow() {
       this.form.balances.push({
-        group_id: this.group_first.name,
+        group_id: this.group_first.id,
         debit: "",
         credit: "",
         // company_id: 4,
@@ -251,10 +354,10 @@ export default {
     deleteRow(index) {
       this.form.balances.splice(index, 1);
     },
-    doFormat($item) {
-      var $i = format($item, "yyyy-MM-dd");
-      return $i;
-    },
+    // doFormat($item) {
+    //   var $i = format($item, "yyyy-MM-dd");
+    //   return $i;
+    // },
   },
 };
 </script>
