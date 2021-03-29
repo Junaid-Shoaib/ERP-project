@@ -18152,10 +18152,13 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      dtotal: null,
-      ctotal: null,
+      dr: 0,
+      cr: 0,
+      diffrence: 0,
+      jj: "",
+      // d: "balance.debit",
       form: this.$inertia.form({
-        date: null,
+        date: "",
         discription: null,
         ref: this.accounts[0].id,
         company_id: this.comp_first.id,
@@ -18176,9 +18179,40 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
+    dr: function dr() {
+      var diff = 0;
+      diff = this.dr; // console.log("jsd" + diff);
+
+      this.diffrence = diff;
+    },
+    cr: function cr() {
+      var diff = 0;
+      diff = this.cr;
+      console.log("jsd" + diff);
+      this.diffrence = diff;
+    },
+    diffrence: function diffrence() {
+      var diff = 0;
+      diff = this.dr - this.cr; // console.log("jsd" + diff);
+
+      this.diffrence = diff;
+    },
+    jj: function jj() {
+      var a = 0;
+      a = this.form.type_id; // console.log("jsd" + diff);
+    },
     // type: function (val) {
     //   this.form.type_id = val;
     //   this.val = form.ref;
+    // },
+    // balances: function () {
+    //   let dtotal = 0;
+    //   for (var i = 0; i < this.form.balances.length; i++) {
+    //     dtotal += parseInt(this.form.balances[i].debit);
+    //     console.log(dtotal);
+    //     // console.log(i);
+    //   }
+    //   this.dr = dtotal;
     // },
     errors: function errors() {
       if (this.errors) {
@@ -18189,24 +18223,27 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     submit: function submit() {
-      // this.form.date = format(this.form.date, "yyyy-MM-dd");
-      this.$inertia.post(route("documents.store"), this.form);
-    },
-    total: function total() {
-      var dtotal = 0;
-
-      for (var i = 0; i < this.form.balances.length; i++) {
-        // if (this.form.balances[i].debit) {
-        dtotal = dtotal + parseInt(this.form.balances[i].debit); // }
-
-        console.log(dtotal + " "); // if (this.form.balances[i].credit) {
-        //   ctotal = ctotal + this.form.balances.balances[i].credit;
-        // }
+      if (this.diffrence === 0) {
+        //   // this.form.date = format(this.form.date, "yyyy-MM-dd");
+        this.$inertia.post(route("documents.store"), this.form);
+      } else {
+        alert("Entry Diffrence are Not Equal");
       }
-
-      this.dtotal = dtotal;
-      this.ctotal = ctotal;
     },
+    // total() {
+    //   let dtotal = 0;
+    //   for (var i = 0; i < this.form.balances.length; i++) {
+    //     // if (this.form.balances[i].debit) {
+    //     dtotal = dtotal + parseInt(this.form.balances[i].debit);
+    //     // }
+    //     console.log(dtotal + " ");
+    //     // if (this.form.balances[i].credit) {
+    //     //   ctotal = ctotal + this.form.balances.balances[i].credit;
+    //     // }
+    //   }
+    //   this.dtotal = dtotal;
+    //   this.ctotal = ctotal;
+    // },
     //   for (var i = 0; i <= count(this.form.balances); i++) {
     //     if (this.form.balances[i + 1].debit) {
     //       dtotal = dtotal + this.form.balances.balances[i].debit;
@@ -18220,13 +18257,34 @@ __webpack_require__.r(__webpack_exports__);
     // },
     debitchange: function debitchange(index) {
       var a = this.form.balances[index];
-      a.credit = 0;
-      console.log(a.debit);
+      a.credit = 0; // console.log(a.debit);
+
+      this.dtotal();
+      this.ctotal();
     },
     creditchange: function creditchange(index) {
       var b = this.form.balances[index];
       b.debit = 0;
-      console.log(b.credit);
+      this.ctotal();
+      this.dtotal(); // console.log(b.credit);
+    },
+    dtotal: function dtotal() {
+      var d = 0;
+
+      for (var i = 0; i < this.form.balances.length; i++) {
+        d += parseInt(this.form.balances[i].debit); // console.log("Juna11" + d);
+      }
+
+      this.dr = d;
+    },
+    ctotal: function ctotal() {
+      var c = 0;
+
+      for (var i = 0; i < this.form.balances.length; i++) {
+        c += parseInt(this.form.balances[i].credit); // console.log("Juna11" + c);
+      }
+
+      this.cr = c;
     },
     addRow: function addRow() {
       this.form.balances.push({
@@ -18240,11 +18298,11 @@ __webpack_require__.r(__webpack_exports__);
     },
     deleteRow: function deleteRow(index) {
       this.form.balances.splice(index, 1);
-    } // doFormat($item) {
-    //   var $i = format($item, "yyyy-MM-dd");
-    //   return $i;
-    // },
-
+    },
+    doFormat: function doFormat($item) {
+      var $i = format($item, "yyyy-MM-dd");
+      return $i;
+    }
   }
 });
 
@@ -24095,34 +24153,37 @@ var _hoisted_15 = {
   "class": "panel-body"
 };
 var _hoisted_16 = {
-  key: 0
-};
-var _hoisted_17 = {
   "class": "table border"
 };
 
-var _hoisted_18 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("thead", {
+var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("thead", {
   "class": ""
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("tr", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("th", null, "Account Group"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("th", null, "Debit"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("th", null, "Credit"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <th>Company</th>\n                <th>Account</th>\n                <th>Year</th> "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("th", null, "Action")])], -1
 /* HOISTED */
 );
 
-var _hoisted_19 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("thead", {
+var _hoisted_18 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("thead", {
   "class": ""
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("tr", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("th", null, "Diffrence"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("th", null, "Debit"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("th", null, "Credit"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <th>Company</th>\n                <th>Account</th>\n                <th>Year</th> "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <th>Action</th> ")])], -1
 /* HOISTED */
 );
 
-var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", {
+var _hoisted_19 = {
   "class": "px-4 py-2 bg-gray-100 border-t border-gray-200 flex justify-start items-center"
-}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("button", {
+};
+
+var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("button", {
   "class": "border bg-indigo-300 rounded-xl px-4 py-2 ml-4 mt-4",
   type: "submit"
-}, " Create Balance ")], -1
+}, " Create Balance ", -1
 /* HOISTED */
 );
 
-var _hoisted_21 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", {
+var _hoisted_21 = {
+  key: 0
+};
+
+var _hoisted_22 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", {
   "class": "px-4 py-2 bg-gray-100 border-t border-gray-200 flex justify-start items-center"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <button\n            class=\"border bg-indigo-300 rounded-xl px-4 py-2 ml-4 mt-4\"\n            type=\"submit\"\n          >\n            Create Transaction\n          </button> "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <button\n            class=\"border bg-indigo-300 rounded-xl px-4 py-2 ml-4 mt-4\"\n            type=\"submit\"\n          >\n            Cancel\n          </button> "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <button\n            class=\"border bg-indigo-300 rounded-xl px-4 py-2 ml-4 mt-4\"\n            type=\"submit\"\n          >\n            Add Row\n          </button> "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"ml-4 mt-4\" v-if=\"errors.name\">\n            {{ errors.name }}\n          </div> ")], -1
 /* HOISTED */
@@ -24222,9 +24283,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         onClick: _cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
           return $options.addRow && $options.addRow.apply($options, arguments);
         }, ["prevent"]))
-      }, " Add row "), $data.isError ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("div", _hoisted_16, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.firstError), 1
-      /* TEXT */
-      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("table", _hoisted_17, [_hoisted_18, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.form.balances, function (balance, index) {
+      }, " Add row "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("table", _hoisted_16, [_hoisted_17, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.form.balances, function (balance, index) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("tr", {
           key: balance.id
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("select", {
@@ -24249,7 +24308,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           },
           type: "text",
           onChange: function onChange($event) {
-            return $options.debitchange(index), $options.total();
+            return $options.debitchange(index);
           },
           "class": "rounded-md w-36"
         }, null, 40
@@ -24275,34 +24334,41 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         , ["onClick"])]);
       }), 128
       /* KEYED_FRAGMENT */
-      ))]), _hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("tbody", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("input", {
+      ))]), _hoisted_18, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("tbody", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("input", {
         "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
-          return _ctx.diffrence = $event;
+          return $data.diffrence = $event;
         }),
         type: "text",
         "class": "rounded-md w-36"
       }, null, 512
       /* NEED_PATCH */
-      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, _ctx.diffrence]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("input", {
+      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.diffrence]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("input", {
         "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
-          return $data.dtotal = $event;
+          return $data.dr = $event;
         }),
         type: "text",
         "class": "rounded-md w-36"
       }, null, 512
       /* NEED_PATCH */
-      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.dtotal]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("input", {
+      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.dr]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" @change=\"total\" "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("input", {
         "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
-          return $data.ctotal = $event;
+          return $data.cr = $event;
         }),
         type: "text",
-        onChange: _cache[11] || (_cache[11] = function () {
-          return $options.total && $options.total.apply($options, arguments);
-        }),
         "class": "rounded-md w-36"
-      }, null, 544
-      /* HYDRATE_EVENTS, NEED_PATCH */
-      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.ctotal]])])])])])]), _hoisted_20, _hoisted_21], 32
+      }, null, 512
+      /* NEED_PATCH */
+      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.cr]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("input", {
+        "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
+          return $data.jj = $event;
+        }),
+        type: "text",
+        "class": "rounded-md w-36"
+      }, null, 512
+      /* NEED_PATCH */
+      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.jj]])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_19, [_hoisted_20, $data.isError ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("div", _hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.firstError), 1
+      /* TEXT */
+      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), _hoisted_22], 32
       /* HYDRATE_EVENTS */
       )])];
     }),

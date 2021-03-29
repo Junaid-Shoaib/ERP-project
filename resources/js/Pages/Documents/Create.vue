@@ -87,7 +87,6 @@
           >
             Add row
           </button>
-          <div v-if="isError">{{ firstError }}</div>
           <table class="table border">
             <thead class="">
               <tr>
@@ -120,7 +119,7 @@
                   <input
                     v-model="balance.debit"
                     type="text"
-                    @change="debitchange(index), total()"
+                    @change="debitchange(index)"
                     class="rounded-md w-36"
                   />
                 </td>
@@ -164,15 +163,16 @@
                   />
                 </td>
                 <td>
-                  <input v-model="dtotal" type="text" class="rounded-md w-36" />
+                  <input v-model="dr" type="text" class="rounded-md w-36" />
                 </td>
+
                 <td>
-                  <input
-                    v-model="ctotal"
-                    type="text"
-                    @change="total"
-                    class="rounded-md w-36"
-                  />
+                  <!-- @change="total" -->
+                  <input v-model="cr" type="text" class="rounded-md w-36" />
+                </td>
+
+                <td>
+                  <input v-model="jj" type="text" class="rounded-md w-36" />
                 </td>
               </tr>
             </tbody>
@@ -188,6 +188,7 @@
           >
             Create Balance
           </button>
+          <div v-if="isError">{{ firstError }}</div>
         </div>
 
         <div
@@ -252,11 +253,14 @@ export default {
 
   data() {
     return {
-      dtotal: null,
-      ctotal: null,
+      dr: 0,
+      cr: 0,
+      diffrence: 0,
+      jj: "",
+      // d: "balance.debit",
 
       form: this.$inertia.form({
-        date: null,
+        date: "",
         discription: null,
         ref: this.accounts[0].id,
         company_id: this.comp_first.id,
@@ -280,11 +284,51 @@ export default {
       firstError: "",
     };
   },
+
   watch: {
+    dr: function () {
+      let diff = 0;
+      diff = this.dr;
+      // console.log("jsd" + diff);
+      this.diffrence = diff;
+    },
+
+    cr: function () {
+      let diff = 0;
+      diff = this.cr;
+      console.log("jsd" + diff);
+      this.diffrence = diff;
+    },
+
+    diffrence: function () {
+      let diff = 0;
+      diff = this.dr - this.cr;
+      // console.log("jsd" + diff);
+      this.diffrence = diff;
+    },
+
+    jj: function () {
+      let a = 0;
+      a = this.form.type_id;
+
+      // console.log("jsd" + diff);
+    },
     // type: function (val) {
     //   this.form.type_id = val;
     //   this.val = form.ref;
     // },
+
+    // balances: function () {
+    //   let dtotal = 0;
+    //   for (var i = 0; i < this.form.balances.length; i++) {
+    //     dtotal += parseInt(this.form.balances[i].debit);
+    //     console.log(dtotal);
+
+    //     // console.log(i);
+    //   }
+    //   this.dr = dtotal;
+    // },
+
     errors: function () {
       if (this.errors) {
         this.firstError = this.errors[Object.keys(this.errors)[0]];
@@ -295,27 +339,31 @@ export default {
 
   methods: {
     submit() {
-      // this.form.date = format(this.form.date, "yyyy-MM-dd");
-      this.$inertia.post(route("documents.store"), this.form);
-    },
-
-    total() {
-      let dtotal = 0;
-
-      for (var i = 0; i < this.form.balances.length; i++) {
-        // if (this.form.balances[i].debit) {
-        dtotal = dtotal + parseInt(this.form.balances[i].debit);
-        // }
-        console.log(dtotal + " ");
-
-        // if (this.form.balances[i].credit) {
-        //   ctotal = ctotal + this.form.balances.balances[i].credit;
-        // }
+      if (this.diffrence === 0) {
+        //   // this.form.date = format(this.form.date, "yyyy-MM-dd");
+        this.$inertia.post(route("documents.store"), this.form);
+      } else {
+        alert("Entry Diffrence are Not Equal");
       }
-
-      this.dtotal = dtotal;
-      this.ctotal = ctotal;
     },
+
+    // total() {
+    //   let dtotal = 0;
+
+    //   for (var i = 0; i < this.form.balances.length; i++) {
+    //     // if (this.form.balances[i].debit) {
+    //     dtotal = dtotal + parseInt(this.form.balances[i].debit);
+    //     // }
+    //     console.log(dtotal + " ");
+
+    //     // if (this.form.balances[i].credit) {
+    //     //   ctotal = ctotal + this.form.balances.balances[i].credit;
+    //     // }
+    //   }
+
+    //   this.dtotal = dtotal;
+    //   this.ctotal = ctotal;
+    // },
 
     //   for (var i = 0; i <= count(this.form.balances); i++) {
     //     if (this.form.balances[i + 1].debit) {
@@ -332,13 +380,35 @@ export default {
     debitchange(index) {
       let a = this.form.balances[index];
       a.credit = 0;
-      console.log(a.debit);
+      // console.log(a.debit);
+      this.dtotal();
+      this.ctotal();
     },
 
     creditchange(index) {
       let b = this.form.balances[index];
       b.debit = 0;
-      console.log(b.credit);
+      this.ctotal();
+      this.dtotal();
+      // console.log(b.credit);
+    },
+
+    dtotal() {
+      let d = 0;
+      for (let i = 0; i < this.form.balances.length; i++) {
+        d += parseInt(this.form.balances[i].debit);
+        // console.log("Juna11" + d);
+      }
+      this.dr = d;
+    },
+
+    ctotal() {
+      let c = 0;
+      for (let i = 0; i < this.form.balances.length; i++) {
+        c += parseInt(this.form.balances[i].credit);
+        // console.log("Juna11" + c);
+      }
+      this.cr = c;
     },
 
     addRow() {
@@ -354,10 +424,10 @@ export default {
     deleteRow(index) {
       this.form.balances.splice(index, 1);
     },
-    // doFormat($item) {
-    //   var $i = format($item, "yyyy-MM-dd");
-    //   return $i;
-    // },
+    doFormat($item) {
+      var $i = format($item, "yyyy-MM-dd");
+      return $i;
+    },
   },
 };
 </script>

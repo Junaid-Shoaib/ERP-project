@@ -12,6 +12,7 @@ use App\Models\Entry;
 use App\Models\Year;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class DocumentController extends Controller
 {
@@ -78,9 +79,11 @@ class DocumentController extends Controller
                 
                 DB::transaction(function() use($request) {
                     
+                    $dated = new Carbon($request->date); 
                     $doc = Document::create([
                         'ref' => Request::input('ref'),
-                        'date' => Request::input('date'),
+                        // 'date' => Request::input('date'),
+                        'date' => $dated->format('Y-m-d'),
                         'description' => Request::input('description'),
                         'company_id' => Request::input('company_id'),
                         'type_id' =>Request::input('type_id'), 
@@ -102,7 +105,11 @@ class DocumentController extends Controller
                                 ]);
                                 
                             }
+
+                           
                         });
+
+                   
                             
             return Redirect::route('documents')->with('success', 'Transaction created.');
     
